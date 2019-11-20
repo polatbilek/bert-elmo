@@ -1,0 +1,31 @@
+{"lstm": {"use_skip_connections": true,
+  "projection_dim": 256,
+  "cell_clip": 3,
+  "proj_clip": 3,
+  "dim": 2048,
+  "n_layers": 2},
+  "char_cnn": {"activation": "relu",
+    "filters": [[1, 32], [2, 32], [3, 64], [4, 128], [5, 256], [6, 512], [7, 1024]],
+    "n_highway": 1,
+    "embedding": {"dim": 16},
+    "n_characters": 262,
+    "max_characters_per_token": 50}}
+
+
+batch_size = 128  # batch size for each GPU
+n_gpus = 3
+
+# number of tokens in training data
+n_train_tokens =
+
+options = {
+ 'bidirectional': True,
+ 'dropout': 0.1,
+ 'all_clip_norm_val': 10.0,
+
+ 'n_epochs': 10,
+ 'n_train_tokens': n_train_tokens,
+ 'batch_size': batch_size,
+ 'n_tokens_vocab': vocab.size,
+ 'unroll_steps': 20,
+ 'n_negative_samples_batch': 8192,
