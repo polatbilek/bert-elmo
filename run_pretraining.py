@@ -136,7 +136,7 @@ def model_fn_builder(bert_config, init_checkpoint, learning_rate,
 
     is_training = (mode == tf.estimator.ModeKeys.TRAIN)
 
-    elmo = BidirectionalLanguageModelGraph(char_ids)
+    elmo = BidirectionalLanguageModelGraph(word_ids=input_ids, char_ids=char_ids)
 
     model = modeling.BertModel(
         config=bert_config,

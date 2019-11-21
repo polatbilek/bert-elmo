@@ -13,7 +13,7 @@ class flags():
 		self.max_prediction_per_seq = 15
 		self.input_file = "/tmp/tf_examples.tfrecord"
 		self.vocab_file = "/media/darg2/hdd/yl_tez/bert_project/vocab.txt"
-		self.word_vocab_size = 32267
+		self.word_vocab_size = 31811
 
 
 FLAGS = flags()

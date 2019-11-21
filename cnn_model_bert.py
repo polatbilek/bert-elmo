@@ -16,12 +16,13 @@ class BidirectionalLanguageModelGraph(object):
 	a bidirectional language model
 	'''
 
-	def __init__(self, ids,
+	def __init__(self, word_ids, char_ids,
 				 use_character_inputs=True,
 				 max_batch_size=128):
 
 		self._max_batch_size = max_batch_size
-		self.ids_placeholder = ids
+		self.ids_placeholder = char_ids
+		self.word_ids = word_ids
 		self.use_character_inputs = use_character_inputs
 		self.embedding_table = tf.get_variable(name="word_embedding_table",
 											   shape=[FLAGS.word_vocab_size, FLAGS.bert_embedding_size],
@@ -36,7 +37,7 @@ class BidirectionalLanguageModelGraph(object):
 		self.ids_placeholder = tf.reshape(self.ids_placeholder,
 		                                  [FLAGS.batch_size, FLAGS.sequence_length, FLAGS.max_characters_per_token])
 
-		print(np.shape(self.ids_placeholder))
+
 
 		projection_dim = FLAGS.projection_dim
 		filters = FLAGS.filters
@@ -189,5 +190,7 @@ class BidirectionalLanguageModelGraph(object):
 			shp = [FLAGS.batch_size, FLAGS.sequence_length, projection_dim]
 			embedding = tf.reshape(embedding, shp)
 
-
+		#TODO:
+		#here i should update the word vectors, learned from elmo in embedding_table
+		#simply self.embeding_table[table_relative_index] = self.elmo_emeddings[elmo_relative_index]
 		self.elmo_embeddings = tf.squeeze(embedding)
