@@ -173,8 +173,18 @@ class BertModel(object):
       with tf.variable_scope("embeddings"):
         # Perform embedding lookup on the word ids.
 
-        self.embedding_table = embedding_table
+        #self.embedding_table = embedding_table
         self.embedding_output = elmo_embeddings
+
+        (self.embedding_output, self.embedding_table) = embedding_lookup(
+             input_ids=input_ids,
+             vocab_size=config.vocab_size,
+             embedding_size=config.hidden_size,
+             initializer_range=config.initializer_range,
+             word_embedding_name="word_embeddings",
+             use_one_hot_embeddings=use_one_hot_embeddings)
+
+
         # Add positional embeddings and token type embeddings, then layer
         # normalize and perform dropout.
         self.embedding_output = embedding_postprocessor(
@@ -489,6 +499,8 @@ def embedding_postprocessor(input_tensor,
           name=position_embedding_name,
           shape=[max_position_embeddings, width],
           initializer=create_initializer(initializer_range))
+
+    
       # Since the position embedding table is a learned variable, we create it
       # using a (long) sequence length `max_position_embeddings`. The actual
       # sequence length might be shorter than this, for faster training of

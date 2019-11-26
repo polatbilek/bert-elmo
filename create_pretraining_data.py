@@ -31,7 +31,7 @@ FLAGS = flags.FLAGS
 flags.DEFINE_string("input_file", None,
                     "Input raw text file (or comma-separated list of files).")
 
-flags.DEFINE_string("char_vocab_file", "/media/darg2/hdd/yl_tez/bert_project/char_vocab.txt",
+flags.DEFINE_string("char_vocab_file", "./bert_base/char_vocab.txt",
                     "Vocabulary file for characters")
 
 flags.DEFINE_string(
@@ -62,7 +62,7 @@ flags.DEFINE_integer(
     "Number of times to duplicate the input data (with different masks).")
 
 flags.DEFINE_integer(
-    "max_char_seq", 50,
+    "max_char_seq", 40,
     "maximum number of char a word can have.")
 
 flags.DEFINE_float("masked_lm_prob", 0.15, "Masked LM probability.")
@@ -136,17 +136,9 @@ def write_instance_to_example_files(instances, tokenizer, max_seq_length,
       input_mask.append(0)
       segment_ids.append(0)
 
-    try:
-      assert len(input_ids) == max_seq_length
-      assert len(input_mask) == max_seq_length
-      assert len(segment_ids) == max_seq_length
-    except:
-      print("assertteyiz")
-      print(len(segment_ids))
-      print(len(input_ids))
-      instance.segment_ids = segment_ids[:-2]
-
-    segment_ids = instance.segment_ids
+    assert len(input_ids) == max_seq_length
+    assert len(input_mask) == max_seq_length
+    assert len(segment_ids) == max_seq_length
 
     masked_lm_positions = list(instance.masked_lm_positions)
     masked_lm_ids = tokenizer.convert_tokens_to_ids(instance.masked_lm_labels)
@@ -159,20 +151,24 @@ def write_instance_to_example_files(instances, tokenizer, max_seq_length,
 
     next_sentence_label = 1 if instance.is_random_next else 0
 
-    for token in instance.tokens:
-        try:
-          if tokenizer.convert_tokens_to_ids([token])[0] < 999:  # token is a special tag
-              char_ids.append(char_vocab[token])
-          else:
-              for char in token:
-                  char_ids.append(char_vocab[char.lower()])
-        except:
-          print(token)
-          print(tokenizer.convert_tokens_to_ids([token]))
+    if len(input_ids) != max_seq_length:
+      print("ids;!!!")
+      sys.exit()
 
-        if len(token) < FLAGS.max_char_seq:
-            for i in range(FLAGS.max_char_seq - len(token)):
-                char_ids.append(char_vocab["[CPAD]"]) # padding for chars
+    for token_id in input_ids:
+      char_len = 0
+
+      if token_id < 999:  # token is a special tag
+          char_ids.append(token_id)
+          char_len += 1
+      else:
+          for char in tokenizer.convert_ids_to_tokens([token_id])[0]:
+              char_ids.append(char_vocab[char.lower()])
+              char_len += 1
+
+      if char_len < FLAGS.max_char_seq:
+          for i in range(FLAGS.max_char_seq - char_len):
+              char_ids.append(char_vocab["[CPAD]"]) # padding for chars
 
 
     features = collections.OrderedDict()
@@ -369,45 +365,29 @@ def create_instances_from_document(
         tokens.append("[SEP]")
         segment_ids.append(1)
 
-        if(len(tokens) != len(segment_ids)):
-          print("masked lm pred öncesi")
-          print(len(tokens))
-          print(len(segment_ids))
-          print(tokens)
-          print(segment_ids)
-          for i in tokens:
-            if i == "[SEP]":
-              print(tokens.index(i))
-              break
-
-          for i in segment_ids:
-            if i == 1:
-              print(segment_ids.index(i))
-              break
-
-          sys.exit()
+        # if len(tokens) != max_seq_length:
+        #   print("tokens1")
+        #   sys.exit()
+        # if len(segment_ids) != max_seq_length:
+        #   print("Segmnets1")
+        #   sys.exit()
+        # elif len(tokens) != len(segment_ids):
+        #   print("esitlik1")
+        #   sys.exit()
 
         (tokens, masked_lm_positions,
          masked_lm_labels) = create_masked_lm_predictions(
              tokens, masked_lm_prob, max_predictions_per_seq, vocab_words, rng)
 
-        if(len(tokens) != len(segment_ids)):
-          print("masked lm pred sonrası create öncesi")
-          print(len(tokens))
-          print(len(segment_ids))
-          print(tokens)
-          print(segment_ids)
-          for i in tokens:
-            if i == "[SEP]":
-              print(tokens.index(i))
-              break
-
-          for i in segment_ids:
-            if i == 1:
-              print(segment_ids.index(i))
-              break
-
-          sys.exit()
+        # if len(tokens) != max_seq_length:
+        #   print("tokens")
+        #   sys.exit()
+        # if len(segment_ids) != max_seq_length:
+        #   print("Segmnets")
+        #   sys.exit()
+        # elif len(tokens) != len(segment_ids):
+        #   print("esitlik")
+        #   sys.exit()
 
         instance = TrainingInstance(
             tokens=tokens,
@@ -415,24 +395,6 @@ def create_instances_from_document(
             is_random_next=is_random_next,
             masked_lm_positions=masked_lm_positions,
             masked_lm_labels=masked_lm_labels)
-
-        if(len(instance.tokens) != len(instance.segment_ids)):
-          print("create sonrası")
-          print(len(instance.tokens))
-          print(len(instance.segment_ids))
-          print(instance.tokens)
-          print(instance.segment_ids)
-          for i in instance.tokens:
-            if i == "[SEP]":
-              print(instance.tokens.index(i))
-              break
-
-          for i in instance.segment_ids:
-            if i == 1:
-              print(instance.segment_ids.index(i))
-              break
-
-          sys.exit()
 
         instances.append(instance)
       current_chunk = []
