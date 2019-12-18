@@ -194,3 +194,8 @@ class BidirectionalLanguageModelGraph(object):
 		#here i should update the word vectors, learned from elmo in embedding_table
 		#simply self.embeding_table[table_relative_index] = self.elmo_emeddings[elmo_relative_index]
 		self.elmo_embeddings = tf.squeeze(embedding)
+
+		word_ids_flatten = tf.expand_dims(tf.reshape(self.word_ids, [-1]), 1)
+		flat_embeddings = tf.reshape(self.elmo_embeddings, [FLAGS.batch_size*FLAGS.sequence_length, FLAGS.bert_embedding_size])
+
+		self.embedding_table = tf.scatter_nd_update(self.embedding_table, word_ids_flatten, flat_embeddings)

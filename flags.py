@@ -12,7 +12,7 @@ class flags():
 		self.batch_size = 8
 		self.max_prediction_per_seq = 15
 		self.input_file = "/tmp/tf_examples.tfrecord"
-		self.vocab_file = "./bert_base/vocab.txt"
+		self.vocab_file = "./bert_base/word_vocab.txt"
 		self.word_vocab_size = 31861
 
 
