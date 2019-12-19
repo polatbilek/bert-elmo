@@ -158,12 +158,15 @@ def write_instance_to_example_files(instances, tokenizer, max_seq_length,
     for token_id in input_ids:
       char_len = 0
 
-      if token_id < 999:  # token is a special tag
+      if token_id < 1001:  # token is a special tag
           char_ids.append(token_id)
           char_len += 1
       else:
           for char in tokenizer.convert_ids_to_tokens([token_id])[0]:
-              char_ids.append(char_vocab[char.lower()])
+              try:
+                  char_ids.append(char_vocab[char.lower()])
+              except:
+                  char_ids.append(char_vocab["[CUNK]"])            
               char_len += 1
 
       if char_len < FLAGS.max_char_seq:

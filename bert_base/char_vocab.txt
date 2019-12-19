@@ -1,4 +1,10 @@
 [PAD]
+[CPAD]
+[CUNK]
+[UNK]
+[CLS]
+[SEP]
+[MASK]
 [unused0]
 [unused1]
 [unused2]
@@ -98,10 +104,6 @@
 [unused96]
 [unused97]
 [unused98]
-[UNK]
-[CLS]
-[SEP]
-[MASK]
 [unused99]
 [unused100]
 [unused101]
@@ -997,7 +999,6 @@
 [unused991]
 [unused992]
 [unused993]
-[CPAD]
 !
 "
 #
@@ -5394,6 +5395,7 @@ z
 鴻
 趨
 異
+근
 賦
 初
 暦
