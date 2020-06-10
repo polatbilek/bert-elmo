@@ -191,7 +191,7 @@ def write_instance_to_example_files(instances, tokenizer, max_seq_length,
 
     total_written += 1
 
-    if inst_index < 20:
+    if inst_index < 3:
       tf.logging.info("*** Example ***")
       tf.logging.info("tokens: %s" % " ".join(
           [tokenization.printable_text(x) for x in instance.tokens]))
@@ -519,6 +519,7 @@ def main(_):
   for input_file in input_files:
     tf.logging.info("  %s", input_file)
 
+  tf.logging.info("*** Creating instances ***")
   rng = random.Random(FLAGS.random_seed)
   instances = create_training_instances(
       input_files, tokenizer, FLAGS.max_seq_length, FLAGS.dupe_factor,

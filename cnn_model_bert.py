@@ -52,7 +52,7 @@ class BidirectionalLanguageModelGraph(object):
 			activation = tf.nn.relu
 
 		# the character embeddings
-		with tf.device("/cpu:0"):
+		with tf.device("/GPU:0"):
 			self.embedding_weights = tf.get_variable(
 				"char_embed", [n_chars, char_embed_dim],
 				dtype=DTYPE,
